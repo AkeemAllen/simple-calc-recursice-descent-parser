@@ -7,6 +7,9 @@ int parseFactor(char **expression) {
     int result = **expression - '0';
     (*expression)++;
     return result;
+  } else if (**expression == '-') {
+    (*expression)++;
+    return -parseFactor(expression);
   } else {
     printf("Not a digit");
   }
@@ -15,48 +18,48 @@ int parseFactor(char **expression) {
 
 int parseProduct(char **expression) {
   int fac1 = parseFactor(expression);
-  while (**expression == '*') {
+  while (**expression == '*' || **expression == '/') {
+    int mulOrDiv = 1;
+    if (**expression == '/')
+      mulOrDiv = 0;
+
     ++(*expression);
     int fac2 = parseFactor(expression);
-    fac1 = fac1 * fac2;
-  }
-  return fac1;
-};
+    if (mulOrDiv == 1) {
+      fac1 = fac1 * fac2;
+    } else {
 
-int parseQuotient(char **expression) {
-  int fac1 = parseProduct(expression);
-  while (**expression == '/') {
-    ++(*expression);
-    int fac2 = parseProduct(expression);
-    fac1 = fac1 / fac2;
+      fac1 = fac1 / fac2;
+    }
   }
   return fac1;
 };
 
 int parseSum(char **expression) {
-  int fac1 = parseQuotient(expression);
-  while (**expression == '+') {
-    ++(*expression);
-    int fac2 = parseQuotient(expression);
-    fac1 = fac1 + fac2;
-  }
-  return fac1;
-};
+  int fac1 = parseProduct(expression);
 
-int parseDiff(char **expression) {
-  int fac1 = parseSum(expression);
-  while (**expression == '-') {
+  while (**expression == '+' || **expression == '-') {
+    // Addition is default 1; Subtraction is 0;
+    int addOrSub = 1;
+    if (**expression == '-')
+      addOrSub = 0;
+
     ++(*expression);
-    int fac2 = parseSum(expression);
-    fac1 = fac1 - fac2;
+    int fac2 = parseProduct(expression);
+    if (addOrSub == 1) {
+      fac1 = fac1 + fac2;
+    } else {
+      fac1 = fac1 - fac2;
+    }
   }
+
   return fac1;
 };
 
 int main(int argc, char *argv[]) {
   char *expression = argv[1];
 
-  int result = parseDiff(&expression);
+  int result = parseSum(&expression);
 
   printf("Result: %d\n", result);
   return 0;

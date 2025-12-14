@@ -15,13 +15,9 @@ double parseFactor(char **expression) {
     }
   }
 
-  double inner_result;
   if (**expression == '(') {
     (*expression)++;
-    inner_result = parseSum(expression);
-  }
-
-  if (**expression == ')') {
+    double inner_result = parseSum(expression);
     (*expression)++;
     return inner_result;
   }
@@ -31,13 +27,16 @@ double parseFactor(char **expression) {
     return -parseFactor(expression);
   }
 
-  printf("Not a digit\n");
+  printf("Error attempting to parse: %c \n", *expression[0]);
 
-  return 0;
+  return -1;
 }
 
 double parseProduct(char **expression) {
   double fac1 = parseFactor(expression);
+  if (fac1 == -1)
+    return fac1;
+
   while (**expression == '*' || **expression == '/') {
     int mulOrDiv = 1;
     if (**expression == '/')
@@ -45,6 +44,9 @@ double parseProduct(char **expression) {
 
     ++(*expression);
     double fac2 = parseFactor(expression);
+    if (fac2 == -1)
+      return fac2;
+
     if (mulOrDiv == 1) {
       fac1 = fac1 * fac2;
     } else {
@@ -56,6 +58,8 @@ double parseProduct(char **expression) {
 
 double parseSum(char **expression) {
   double fac1 = parseProduct(expression);
+  if (fac1 == -1)
+    return fac1;
 
   while (**expression == '+' || **expression == '-') {
     int addOrSub = 1;
@@ -64,6 +68,9 @@ double parseSum(char **expression) {
 
     ++(*expression);
     double fac2 = parseProduct(expression);
+    if (fac2 == -1)
+      return fac2;
+
     if (addOrSub == 1) {
       fac1 = fac1 + fac2;
     } else {
@@ -78,6 +85,8 @@ int main(int argc, char *argv[]) {
   char *expression = argv[1];
 
   double result = parseSum(&expression);
+  if (result == -1)
+    return result;
 
   printf("Result: %.2f\n", result);
   return 0;

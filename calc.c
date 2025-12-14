@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,14 +30,11 @@ double parseFactor(char **expression) {
   }
 
   printf("Error attempting to parse: %c \n", *expression[0]);
-
-  return -1;
+  assert(false);
 }
 
 double parseProduct(char **expression) {
   double fac1 = parseFactor(expression);
-  if (fac1 == -1)
-    return fac1;
 
   while (**expression == '*' || **expression == '/' || **expression == '(') {
     int mulOrDiv = 1;
@@ -46,8 +44,6 @@ double parseProduct(char **expression) {
     if (**expression != '(')
       ++(*expression);
     double fac2 = parseFactor(expression);
-    if (fac2 == -1)
-      return fac2;
 
     if (mulOrDiv == 1) {
       fac1 = fac1 * fac2;
@@ -60,8 +56,6 @@ double parseProduct(char **expression) {
 
 double parseSum(char **expression) {
   double fac1 = parseProduct(expression);
-  if (fac1 == -1)
-    return fac1;
 
   while (**expression == '+' || **expression == '-') {
     int addOrSub = 1;
@@ -70,8 +64,6 @@ double parseSum(char **expression) {
 
     ++(*expression);
     double fac2 = parseProduct(expression);
-    if (fac2 == -1)
-      return fac2;
 
     if (addOrSub == 1) {
       fac1 = fac1 + fac2;
@@ -87,8 +79,6 @@ int main(int argc, char *argv[]) {
   char *expression = argv[1];
 
   double result = parseSum(&expression);
-  if (result == -1)
-    return result;
 
   printf("Result: %.2f\n", result);
   return 0;

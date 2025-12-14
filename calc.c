@@ -10,7 +10,8 @@ double parseFactor(char **expression) {
     result = (result * 10) + (**expression - '0');
     (*expression)++;
     if (**expression == '+' || **expression == '-' || **expression == '/' ||
-        **expression == '*' || **expression == '\0' || **expression == ')') {
+        **expression == '*' || **expression == '\0' || **expression == '(' ||
+        **expression == ')') {
       return result;
     }
   }
@@ -37,12 +38,13 @@ double parseProduct(char **expression) {
   if (fac1 == -1)
     return fac1;
 
-  while (**expression == '*' || **expression == '/') {
+  while (**expression == '*' || **expression == '/' || **expression == '(') {
     int mulOrDiv = 1;
     if (**expression == '/')
       mulOrDiv = 0;
 
-    ++(*expression);
+    if (**expression != '(')
+      ++(*expression);
     double fac2 = parseFactor(expression);
     if (fac2 == -1)
       return fac2;

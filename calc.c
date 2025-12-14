@@ -36,6 +36,8 @@ double parseFactor(char **expression) {
 double parseProduct(char **expression) {
   double fac1 = parseFactor(expression);
 
+  // Instead of implicit multiplication, use preprocessing to add * between the
+  // correct values
   while (**expression == '*' || **expression == '/' || **expression == '(') {
     int mulOrDiv = 1;
     if (**expression == '/')
@@ -48,6 +50,10 @@ double parseProduct(char **expression) {
     if (mulOrDiv == 1) {
       fac1 = fac1 * fac2;
     } else {
+      if (fac2 == 0) {
+        printf("Cannot Divide by Zero\n");
+        assert(false);
+      }
       fac1 = fac1 / fac2;
     }
   }
@@ -75,10 +81,26 @@ double parseSum(char **expression) {
   return fac1;
 };
 
+char *preProcessExpression(char *expression) {
+  char *formattedExpression = malloc(strlen(expression) + 1);
+
+  // Removing Whitespace from expression
+  int j = 0;
+  for (int i = 0; i < strlen(expression); i++) {
+    if (expression[i] != ' ') {
+      formattedExpression[j] = expression[i];
+      j++;
+    }
+  }
+
+  return formattedExpression;
+}
+
 int main(int argc, char *argv[]) {
   char *expression = argv[1];
 
-  double result = parseSum(&expression);
+  char *formattedExpression = preProcessExpression(expression);
+  double result = parseSum(&formattedExpression);
 
   printf("Result: %.2f\n", result);
   return 0;

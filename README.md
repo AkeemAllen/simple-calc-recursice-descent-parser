@@ -6,7 +6,8 @@
 ## Why does this exist?
 
 The long and short of this is I was trying to learn C. I learn by doing so I thought a simple CLI calculator would be a good project.
-Natually the first question that came up was, "How do I parse and evaluate the provided mathematical expression?"
+
+Natually the first question that came up was, "How do I parse and evaluate the given mathematical expression?"
 
 Ba da bing ba da boom, I'm building a recursive descent parser.
 

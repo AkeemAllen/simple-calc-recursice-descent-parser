@@ -136,6 +136,12 @@ char *preProcessExpression(char *expression) {
 }
 
 int main(int argc, char *argv[]) {
+  if (argc <= 1) {
+    printf(
+        "No arguments given. Please enter a simple math expression as input\n");
+    printf("Eg. ./calc \'2(3+5)/4\'\n");
+    assert(false);
+  }
   char *expression = argv[1];
 
   char *formattedExpression = preProcessExpression(expression);

@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,13 +8,32 @@ double parseSum(char **expression);
 
 double parseFactor(char **expression) {
   double result = 0;
-  while (**expression >= '0' && **expression <= '9') {
-    result = (result * 10) + (**expression - '0');
+  double decimalResult = 0;
+  // depth keeps track of the number of decimal spaces after the '.'
+  int depth = 10;
+  bool decimal = false;
+
+  while ((**expression >= '0' && **expression <= '9') || **expression == '.') {
+    if (**expression == '.') {
+      decimal = true;
+      (*expression)++;
+      continue;
+    }
+
+    int expressionValue = **expression - '0';
+
+    if (decimal) {
+      decimalResult = (double)expressionValue / depth + decimalResult;
+      depth = depth * 10;
+    } else {
+      result = (result * 10) + expressionValue;
+    }
+
     (*expression)++;
     if (**expression == '+' || **expression == '-' || **expression == '/' ||
         **expression == '*' || **expression == '\0' || **expression == '(' ||
         **expression == ')') {
-      return result;
+      return result + decimalResult;
     }
   }
 
@@ -36,8 +56,6 @@ double parseFactor(char **expression) {
 double parseProduct(char **expression) {
   double fac1 = parseFactor(expression);
 
-  // Instead of implicit multiplication, use preprocessing to add * between the
-  // correct values
   while (**expression == '*' || **expression == '/' || **expression == '(') {
     int mulOrDiv = 1;
     if (**expression == '/')
@@ -123,6 +141,6 @@ int main(int argc, char *argv[]) {
   char *formattedExpression = preProcessExpression(expression);
   double result = parseSum(&formattedExpression);
 
-  printf("Result: %.2f\n", result);
+  printf("Result: %f\n", result);
   return 0;
 }
